@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>소리보따리 유아교육 리포트</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body style="font-family: 'Noto Sans KR', sans-serif; padding:20px; max-width:800px; margin:auto;">
+  <h2 style="color:#b5417c;">소리보따리 유아교육 리포트</h2>
+
+  <input id="topicInput" placeholder="주제를 입력하세요 (예: 봄이 왔어요)" style="width:100%;padding:10px;margin-bottom:10px;" />
+  <select id="ageSelect" style="width:100%;padding:10px;margin-bottom:10px;">
+    <option value="">연령을 선택하세요</option>
+    <option value="만1세">만1세</option>
+    <option value="만2세">만2세</option>
+    <option value="만3세">만3세</option>
+    <option value="만4세">만4세</option>
+    <option value="만5세">만5세</option>
+  </select>
+  <button onclick="generateReport()" style="width:100%;padding:12px;background:#b5417c;color:white;border:none;border-radius:8px;">리포트 생성</button>
+  <button onclick="saveAsImage()" style="width:100%;padding:12px;margin-top:10px;background:#999;color:white;border:none;border-radius:8px;">이미지로 저장</button>
+
+  <div id="reportBox" style="margin-top:20px;padding:20px;border:1px solid #ddd;" ></div>
+
+  <script>
+    const reportData = {};
+
+    function generateReport() {
+      const topic = document.getElementById("topicInput").value.trim();
+      const age = document.getElementById("ageSelect").value;
+      const box = document.getElementById("reportBox");
+
+      if (!reportData[topic] || !reportData[topic][age]) {
+        box.innerHTML = "<p style='color:red;'>리포트 정보를 찾을 수 없습니다. 주제명과 연령을 확인하세요.</p>";
+        return;
+      }
+
+      const data = reportData[topic][age];
+      let html = "<p><strong>연령 발달 특성:</strong> " + data.연령특성 + "</p>";
+      html += "<table style='width:100%;border-collapse:collapse;margin-top:10px;'>";
+      html += "<thead><tr style='background:#f2f2f2;'><th style='border:1px solid #aaa;padding:8px;'>발달 영역</th><th style='border:1px solid #aaa;padding:8px;'>교육 효과</th></tr></thead><tbody>";
+
+      for (const [domain, effect] of Object.entries(data.발달효과)) {
+        html += "<tr><td style='border:1px solid #ccc;padding:8px;'>" + domain + "</td><td style='border:1px solid #ccc;padding:8px;'>" + effect + "</td></tr>";
+      }
+
+      html += "</tbody></table>";
+      box.innerHTML = html;
+    }
+
+    function saveAsImage() {
+      const target = document.getElementById("reportBox");
+      html2canvas(target).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "유아교육리포트.png";
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+  </script>
+</body>
+</html>

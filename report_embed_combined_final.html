@@ -1,1 +1,122 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8' /><title>리포트</title></head><body><script>const reportData = {}; const calendarMap = {}; const validCombos = {};</script></body></html>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>소리보따리 리포트 생성기</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+    }
+    select, input[type="text"], button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+    button {
+      background-color: #b5417c;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #reportResult {
+      border: 1px solid #ccc;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    #captureArea {
+      background: #fefefe;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>소리보따리 유아교육 리포트</h2>
+
+  <h3>🔍 주제명 + 연령</h3>
+  <select id="topicSelect">
+    <option value="">-- 주제 선택 --</option>
+    <option value="자동차">자동차</option>
+    <option value="봄이왔어요">봄이 왔어요</option>
+  </select>
+  <select id="ageSelect">
+    <option value="">-- 연령 선택 --</option>
+    <option value="만1세">만1세</option>
+    <option value="만2세">만2세</option>
+    <option value="만3세">만3세</option>
+  </select>
+  <button onclick="generateReport()">리포트 생성</button>
+
+  <h3>📅 월 + 주차 + 연령</h3>
+  <select id="monthSelect">
+    <option value="">-- 월 선택 --</option>
+    <option value="3">3월</option>
+    <option value="4">4월</option>
+    <option value="5">5월</option>
+  </select>
+  <select id="weekSelect">
+    <option value="">-- 주차 선택 --</option>
+    <option value="1">1주차</option>
+    <option value="2">2주차</option>
+    <option value="3">3주차</option>
+  </select>
+  <select id="ageSelect2">
+    <option value="">-- 연령 선택 --</option>
+    <option value="만1세">만1세</option>
+    <option value="만2세">만2세</option>
+    <option value="만3세">만3세</option>
+  </select>
+  <button onclick="generateReportByCalendar()">리포트 생성</button>
+
+  <div id="reportResult">
+    <div id="captureArea">
+      <p>리포트를 생성하면 이곳에 출력됩니다.</p>
+    </div>
+    <button onclick="downloadImage()">이미지로 저장</button>
+  </div>
+
+  <script>
+    const reportData = {
+      "자동차_만1세": "만1세 유아는 자동차에 대한 관심을 통해 탐색과 조작 능력을 키웁니다. 또한 의성어와 의태어를 사용하며 언어 발달이 촉진됩니다.",
+      "봄이왔어요_만2세": "만2세 유아는 자연의 변화를 관찰하며 인지 발달과 감성 표현 능력을 기릅니다. 꽃, 햇살, 바람을 주제로 감각놀이가 이루어집니다.",
+      "4_2_만1세": "4월 2주차 만1세 유아는 자연을 관찰하며 탐색 능력을 키우고, 기본적인 소근육 놀이를 통해 신체 조절 능력을 익힙니다."
+    };
+
+    const calendarMap = {
+      "3_2_만1세": "봄이왔어요",
+      "4_2_만1세": "봄이왔어요",
+      "5_3_만3세": "자동차"
+    };
+
+    function generateReport() {
+      const topic = document.getElementById("topicSelect").value;
+      const age = document.getElementById("ageSelect").value;
+      const result = reportData[`${topic}_${age}`] || "리포트 정보를 찾을 수 없습니다. 주제명과 연령을 확인하세요.";
+      document.getElementById("captureArea").innerHTML = `<h4>${topic} (${age})</h4><p>${result}</p>`;
+    }
+
+    function generateReportByCalendar() {
+      const month = document.getElementById("monthSelect").value;
+      const week = document.getElementById("weekSelect").value;
+      const age = document.getElementById("ageSelect2").value;
+      const key = `${month}_${week}_${age}`;
+      const topic = calendarMap[key];
+      const result = reportData[`${topic}_${age}`] || "리포트 정보를 찾을 수 없습니다. 선택 값을 확인해주세요.";
+      document.getElementById("captureArea").innerHTML = `<h4>${topic} (${age})</h4><p>${result}</p>`;
+    }
+
+    function downloadImage() {
+      html2canvas(document.querySelector("#captureArea")).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "report.png";
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+  </script>
+</body>
+</html>

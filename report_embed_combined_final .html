@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>소리보따리 유아교육 리포트 생성기</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    body { font-family: 'Noto Sans KR', sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+    h2 { color: #b5417c; }
+    select, input[type=text] { width: 100%; padding: 10px; margin-bottom: 10px; }
+    button { width: 100%; padding: 12px; background-color: #b5417c; color: white; border: none; font-size: 16px; }
+    #reportArea { margin-top: 20px; border: 1px solid #ccc; padding: 20px; background: #fff; }
+    #saveBtn { background-color: gray; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h2>소리보따리 유아교육 리포트 생성기</h2>
+
+  <h3>🔍 주제 입력 + 연령 선택</h3>
+  <input type="text" id="customTopic" placeholder="주제를 입력하세요 (예: 비행기)" />
+  <select id="ageSelect1">
+    <option value="">-- 연령 선택 --</option>
+    <option>만1세</option><option>만2세</option><option>만3세</option><option>만4세</option><option>만5세</option>
+  </select>
+  <button onclick="generateReport('custom')">리포트 생성</button>
+
+  <h3>📅 월 + 주차 + 연령</h3>
+  <select id="monthSelect">
+    <option>3월</option><option>4월</option><option>5월</option>
+  </select>
+  <select id="weekSelect">
+    <option>1주차</option><option>2주차</option><option>3주차</option><option>4주차</option>
+  </select>
+  <select id="ageSelect2">
+    <option>만1세</option><option>만2세</option><option>만3세</option><option>만4세</option><option>만5세</option>
+  </select>
+  <button onclick="generateReport('calendar')">리포트 생성</button>
+
+  <div id="reportArea"></div>
+  <button id="saveBtn" onclick="saveAsImage()">이미지로 저장</button>
+
+<script>
+const reportData = {
+  "탈것": {
+    "만3세": {
+      "신체": "다양한 탈것 모양 만들기를 통해 소근육 조절력이 향상됩니다.",
+      "사회": "친구들과 탈것 역할놀이를 하며 사회적 협력과 규칙 인식을 학습합니다.",
+      "정서": "익숙한 사물(버스, 자동차 등)과의 상호작용으로 안정감을 형성합니다.",
+      "인지": "탈것의 구조와 기능에 대한 질문을 통해 관찰력과 추리력이 강화됩니다.",
+      "언어": "다양한 교통수단의 명칭을 배우고 이야기 나누기를 통해 표현력을 기릅니다."
+    }
+  }
+};
+
+const calendarMap = {
+  "3월-2주차-만3세": "탈것"
+};
+
+function generateReport(mode) {
+  let topic = "", age = "";
+  if (mode === "custom") {
+    topic = document.getElementById("customTopic").value.trim();
+    age = document.getElementById("ageSelect1").value;
+  } else {
+    const month = document.getElementById("monthSelect").value;
+    const week = document.getElementById("weekSelect").value;
+    age = document.getElementById("ageSelect2").value;
+    const key = `${month}-${week}-${age}`;
+    topic = calendarMap[key] || "";
+  }
+
+  const mappedTopic = Object.keys(reportData).find(t => topic.includes(t)) || topic;
+  const report = (reportData[mappedTopic] && reportData[mappedTopic][age]) || null;
+
+  const area = document.getElementById("reportArea");
+  if (!report) {
+    area.innerHTML = `<p style="color:red;">리포트 정보를 찾을 수 없습니다. 선택 값을 확인해주세요.</p>`;
+    return;
+  }
+
+  area.innerHTML = `
+    <h3>${mappedTopic} (${age})</h3>
+    <ul>
+      <li><b>신체:</b> ${report["신체"]}</li>
+      <li><b>사회:</b> ${report["사회"]}</li>
+      <li><b>정서:</b> ${report["정서"]}</li>
+      <li><b>인지:</b> ${report["인지"]}</li>
+      <li><b>언어:</b> ${report["언어"]}</li>
+    </ul>
+  `;
+}
+
+function saveAsImage() {
+  html2canvas(document.querySelector("#reportArea")).then(canvas => {
+    const a = document.createElement("a");
+    a.href = canvas.toDataURL("image/png");
+    a.download = "report.png";
+    a.click();
+  });
+}
+</script>
+</body>
+</html>
